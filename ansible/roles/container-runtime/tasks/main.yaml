@@ -35,12 +35,27 @@
   become: yes
   shell: "find /tmp/containerd -type f | xargs -I {} mv {} /bin/"
 
-# Configure containerd
-- name: copy containerd config
+- name : generate containerd/config.toml
   become: yes
-  template:
-    src: containerd-config.toml
-    dest: /etc/containerd/config.toml
+  shell: "containerd config default | sudo tee /etc/containerd/config.toml"
+
+- name: configure containerd/config.toml 
+  become: yes
+  replace:
+    path: /etc/containerd/config.toml
+    regexp: '(^\s+SystemdCgroup\s=\s)(false)$'
+    replace: '\1true'
+
+#- name : copy containerd binaries
+#  become: yes
+#  shell: "find /tmp/containerd -type f | xargs -I {} mv {} /bin/"
+
+# Configure containerd
+#- name: copy containerd config
+#  become: yes
+#  template:
+#    src: containerd-config.toml
+#    dest: /etc/containerd/config.toml
 
 - name: create containerd systemd service
   become: yes

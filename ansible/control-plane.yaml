@@ -7,3 +7,13 @@
 
       - name: install calico
         role: calico
+    tasks:
+      - name: configure local user
+        shell:  |
+           mkdir -p ~/.kube
+           pwd
+           sudo pwd
+           sudo echo $(id -u):$(id -g)
+           sudo cp /etc/kubernetes/admin.conf ~/.kube/config
+           sudo chown $(id -u):$(id -g) ~/.kube/config
+        become: no
